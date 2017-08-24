@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:title="รายงานผู้ปริหาร">
+        <menu>
+            <item
+                android:id="@+id/nav_rpt_profit_from_sales"
+                android:icon="@drawable/ic_menu_share"
+                android:title="รายงานกำไรจากการขาย" />
+            <item
+                android:id="@+id/nav_rpt_top_sale"
+                android:icon="@drawable/ic_menu_send"
+                android:title="รายงานยอดขายสูงสุด" />
+        </menu>
+    </item>
+
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_AboutMe"
+                android:icon="@drawable/ic_menu_gallery"
+                android:title="เกี่ยวกับโปรแกรม" />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>
+
+</menu>
