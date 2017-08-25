@@ -33,7 +33,9 @@ public class TestData {
     public static ArrayList<TestData> getDataTest(int size){
         ArrayList<TestData> testDatas = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            testDatas.add(new TestData("Android v"+i, (float) Math.random() * 100));
+            //testDatas.add(new TestData("Android v"+i, (float) Math.random() * 100));
+            int iCount = i + 1;
+            testDatas.add(new TestData("Android v"+iCount,iCount) );
         }
         return testDatas;
     }

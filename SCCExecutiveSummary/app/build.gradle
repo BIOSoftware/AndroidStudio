@@ -26,6 +26,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:support-v4:26.+'
     //compile 'org.quanqi:mpandroidchart:1.7.5'
-    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-
+    //compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+    compile files('libs/MPAndroidChart-v3.0.1.jar')
 }
