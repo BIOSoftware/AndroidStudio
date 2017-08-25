@@ -3,4 +3,33 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorRed">#f70313</color>
+    <color name="colorBlue">#0307f7</color>
+    <color name="colorBackgroudTopLine">#cef5a6</color>
+
+    <color name="colorChart01">#f70b03</color>
+    <color name="colorChart02">#f76903</color>
+    <color name="colorChart03">#f7ef03</color>
+    <color name="colorChart04">#75f703</color>
+    <color name="colorChart05">#03f7b6</color>
+    <color name="colorChart06">#0354f7</color>
+    <color name="colorChart07">#aa03f7</color>
+    <color name="colorChart08">#f70369</color>
+    <color name="colorChart09">#bf4b4b</color>
+    <color name="colorChart10">#a38e32</color>
+    <color name="colorChart11">#468336</color>
+    <color name="colorChart12">#07393b</color>
+    <color name="colorChart13">#440d61</color>
+    <color name="colorChart14">#560e3e</color>
+    <color name="colorChart15">#b96289</color>
+    <color name="colorChart16">#830a24</color>
+    <color name="colorChart17">#5d6342</color>
+    <color name="colorChart18">#23662d</color>
+    <color name="colorChart19">#eac1e1</color>
+    <color name="colorChart20">#cecef1</color>
+
+
+
+
+
 </resources>
