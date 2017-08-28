@@ -29,6 +29,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.suparat.apisit.sccexecutivesummary.model.SP_WEB_RP_SUMPROFIT_ALL;
 import com.suparat.apisit.sccexecutivesummary.model.TestData;
 
 
@@ -76,29 +77,34 @@ public class fm_rpt_profit_from_sales extends Fragment  {
 
         BarChart barChart = (BarChart) v.findViewById(R.id.chart_rpt_profit_from_sales);
         //BarChart barChart = (BarChart)container.findViewById(R.id.chart_rpt_profit_from_sales);
-        final ArrayList<TestData> testDatas = TestData.getDataTest(10);
+        final ArrayList<SP_WEB_RP_SUMPROFIT_ALL> testDatas = SP_WEB_RP_SUMPROFIT_ALL.getSP_WEB_RP_SUMPROFIT_ALL();
 
-        final ArrayList<BarEntry> barEntryScore = new ArrayList<>();
-        final ArrayList<BarEntry> barEntryGrad = new ArrayList<>();
+        final ArrayList<BarEntry> barEntryCost = new ArrayList<>();
+        final ArrayList<BarEntry> barEntrySale = new ArrayList<>();
+        final ArrayList<BarEntry> barEntryProfit = new ArrayList<>();
         int index = 0;
-        for (TestData testData : testDatas) {
-            float fScore = testData.getScore();
-            String fDesc = testData.getName();
-            float fGrade = testData.getGrad();
+        for (SP_WEB_RP_SUMPROFIT_ALL testData : testDatas) {
+            String fXTYPE = testData.getXTYPE();
+            float fSUM_COST_ALL = testData.getSUM_COST_ALL();
+            float fSUM_PROFIT_AMOUNT = testData.getSUM_PROFIT_AMOUNT();
+            float fSUM_SALE_BEFORE_VAT = testData.getSUM_SALE_BEFORE_VAT();
 
-            barEntryScore.add(new BarEntry(index,fScore));
-            barEntryGrad.add(new BarEntry(index,fGrade));
+            barEntryCost.add(new BarEntry(index,fSUM_COST_ALL));
+            barEntrySale.add(new BarEntry(index,fSUM_PROFIT_AMOUNT));
+            barEntryProfit.add(new BarEntry(index,fSUM_SALE_BEFORE_VAT));
 
 
             index++;
         }
 
 
-        BarDataSet datasetScore = new BarDataSet(barEntryScore, "คะแนน");
-        BarDataSet datasetGrade = new BarDataSet(barEntryGrad, "เกรด");
+        BarDataSet datasetCost = new BarDataSet(barEntryCost, "ต้นทุน");
+        BarDataSet datasetSale = new BarDataSet(barEntrySale, "ยอดขาย");
+        BarDataSet datasetProfit = new BarDataSet(barEntryProfit, "กำไร");
 
-        datasetScore.setValueTextSize(8);
-        datasetGrade.setValueTextSize(8);
+        datasetCost.setValueTextSize(8);
+        datasetSale.setValueTextSize(8);
+        datasetProfit.setValueTextSize(8);
 
         List<Integer> fColorList = new ArrayList<Integer>();
 
@@ -112,18 +118,21 @@ public class fm_rpt_profit_from_sales extends Fragment  {
         }
 
         int fColorSet = getResources().getColor(R.color.colorChart01);
-        datasetScore.setColors(fColorSet);
+        datasetCost.setColors(fColorSet);
         fColorSet = getResources().getColor(R.color.colorChart02);
-        datasetGrade.setColors(fColorSet);
+        datasetSale.setColors(fColorSet);
+        fColorSet = getResources().getColor(R.color.colorChart03);
+        datasetProfit.setColors(fColorSet);
 
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
 
 
-        dataSets.add(datasetScore);
-        dataSets.add(datasetGrade);
+        dataSets.add(datasetCost);
+        dataSets.add(datasetSale);
+        dataSets.add(datasetProfit);
 
-        BarData data = new BarData(datasetScore,datasetGrade);
+        BarData data = new BarData(datasetCost,datasetSale,datasetProfit);
 
 
 
@@ -146,7 +155,17 @@ public class fm_rpt_profit_from_sales extends Fragment  {
                                         if (v < 0 || v >= testDatas.size()) {
                                             return "";
                                         }
-                                        return testDatas.get((int) v).getName();
+                                        if (testDatas.get((int) v).getXTYPE() == "1"){
+                                            return "ขายรถ";
+                                        }else
+                                        if (testDatas.get((int) v).getXTYPE() == "2"){
+                                            return "ขายอะไหล่";
+                                        }else
+                                        if (testDatas.get((int) v).getXTYPE() == "3"){
+                                            return "บริการ";
+                                        } else
+                                            return "";
+
                                     }
                                     public int getDecimalDigits() { return 1; }
                                 });
