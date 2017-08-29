@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -33,12 +34,32 @@ import com.suparat.apisit.sccexecutivesummary.model.SP_WEB_RP_SUMPROFIT_ALL;
 import com.suparat.apisit.sccexecutivesummary.model.TestData;
 
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+
+import org.apache.http.client.HttpClient;
+
+import org.apache.http.client.methods.HttpGet;
+
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreProtocolPNames;
+
+
+
+
 
 
 /**
@@ -77,6 +98,9 @@ public class fm_rpt_profit_from_sales extends Fragment  {
 
         BarChart barChart = (BarChart) v.findViewById(R.id.chart_rpt_profit_from_sales);
         //BarChart barChart = (BarChart)container.findViewById(R.id.chart_rpt_profit_from_sales);
+
+
+
         final ArrayList<SP_WEB_RP_SUMPROFIT_ALL> testDatas = SP_WEB_RP_SUMPROFIT_ALL.getSP_WEB_RP_SUMPROFIT_ALL();
 
         final ArrayList<BarEntry> barEntryCost = new ArrayList<>();
@@ -222,6 +246,9 @@ public class fm_rpt_profit_from_sales extends Fragment  {
         }
 
     }
+
+
+
 
 
 }

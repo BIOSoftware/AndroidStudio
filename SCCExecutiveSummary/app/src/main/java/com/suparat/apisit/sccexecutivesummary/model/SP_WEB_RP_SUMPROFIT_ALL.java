@@ -1,19 +1,29 @@
 package com.suparat.apisit.sccexecutivesummary.model;
 
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+
+
 
 /**
  * Created by Apisit on 28/08/2560.
@@ -67,81 +77,66 @@ public class SP_WEB_RP_SUMPROFIT_ALL {
         BufferedReader reader = null;
         String forecastJsonStr = null;
         String js_result;
+        String jsonURI = "http://www2.suparat.com/API/rp_.php?start_date=01/01/2016&end_date=12/31/2017";
 
         ArrayList<HashMap<String, String>> fDataString = new ArrayList<HashMap<String, String>>();
         ArrayList<SP_WEB_RP_SUMPROFIT_ALL> fData = new ArrayList<SP_WEB_RP_SUMPROFIT_ALL>();
 
 
-        try {
-            fData = new ArrayList<>();
-                /* Set to Http post*/
-                /* End set Value*/
-
-            URL url = new URL("http://www2.suparat.com/API/rp_.php?start_date=01/01/2016&end_date=12/31/2017");
-
-            conn = (HttpURLConnection) url.openConnection();
-
-            conn.setRequestMethod("GET");
-            conn.connect();
-
-
-            InputStream inputStream = conn.getInputStream();
-            StringBuffer buffer = new StringBuffer();
-            if (inputStream == null) {
-                // Nothing to do.
-                return null;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            inputStream.close();
-            js_result = sb.toString();
-
-        } catch (Exception e) {
-            Log.e("log_tag", "Error converting result " + e.toString());
-            return fData;
-        }
-
-        try {
-            final JSONArray jArray = new JSONArray(js_result);
-            for (int i = 0; i < jArray.length(); i++) {
-                JSONObject jo = jArray.getJSONObject(i);
-                HashMap<String, String> rpData = new HashMap<String, String>();
-                rpData.put("XTYPE", jo.get("XTYPE").toString());
-                rpData.put("SUM_COST_ALL", jo.get("SUM_COST_ALL").toString());
-                rpData.put("SUM_SALE_BEFORE_VAT", jo.get("SUM_SALE_BEFORE_VAT").toString());
-                rpData.put("SUM_PROFIT_AMOUNT", jo.get("SUM_PROFIT_AMOUNT").toString());
-                fDataString.add(rpData);
-
-
-
-            }
-
-            for (int iCount = 0;iCount < fDataString.size();iCount++){
-
-
-                SP_WEB_RP_SUMPROFIT_ALL aData = null;
-                aData.setXTYPE(fDataString.get(iCount).get("XTYPE"));
-                aData.setSUM_COST_ALL(Float.parseFloat(fDataString.get(iCount).get("SUM_COST_ALL")));
-                aData.setSUM_SALE_BEFORE_VAT(Float.parseFloat(fDataString.get(iCount).get("SUM_SALE_BEFORE_VAT")));
-                aData.setSUM_PROFIT_AMOUNT(Float.parseFloat(fDataString.get(iCount).get("SUM_PROFIT_AMOUNT")));
-
-                fData.add(aData);
-            }
-
-
-        } catch (JSONException e) {
-            Log.e("log_tag", "Error parsing data " + e.toString());
-            return fData;
-        }
-
+        getJSON(jsonURI);
 
         return fData;
     }
+
+    private static void getJSON(String url){
+        class GetJSON extends AsyncTask<String,Void,String>{
+
+            @Override
+            protected String doInBackground(String... strings) {
+                String uri = strings[0];
+                StringBuilder stringBuilder = null;
+                try{
+                    URL url_data = new URL(uri);
+                    HttpURLConnection connection = (HttpURLConnection)url_data.openConnection();
+                    StringBuilder sb = new StringBuilder();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                    String json;
+                    while ((json = bufferedReader.readLine()) != null){
+                        sb.append(json+"\n");
+
+                    }
+                    return sb.toString().trim();
+
+
+                }catch (Exception e){
+                    return null;
+
+                }
+
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+
+                
+            }
+
+
+        }
+
+
+        GetJSON dataJSON = new GetJSON();
+        dataJSON.execute(url);
+
+
+
+
+    }
+
+
+
 
 
 
