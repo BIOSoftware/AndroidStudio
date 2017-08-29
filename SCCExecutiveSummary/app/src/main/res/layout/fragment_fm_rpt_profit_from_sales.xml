@@ -95,12 +95,19 @@
                     android:layout_weight=".5"
                     android:hint="@string/select_month" />
 
+
                 <EditText
                     android:id="@+id/etxt_Year"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
                     android:hint="@string/select_year" />
+
+                <Button
+                    android:id="@+id/btnSelectMonth"
+                    android:text="กดดิ"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
 
@@ -123,7 +130,7 @@
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/chart_rpt_profit_from_sales"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp" />
+                    android:layout_height="300dp" />
 
             </RelativeLayout>
 
