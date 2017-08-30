@@ -4,23 +4,22 @@ package com.suparat.apisit.sccexecutivesummary;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.IdRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ListView;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -29,54 +28,32 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-
-
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.suparat.apisit.sccexecutivesummary.adapter.adapter_rpt_profit_from_sale;
 import com.suparat.apisit.sccexecutivesummary.model.SP_WEB_RP_SUMPROFIT_ALL;
-import com.suparat.apisit.sccexecutivesummary.model.TestData;
+
 
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+
 import java.io.BufferedReader;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.FieldPosition;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.Formatter;
 import java.util.Locale;
-import java.util.Random;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-
-import org.apache.http.client.HttpClient;
-
-import org.apache.http.client.methods.HttpGet;
-
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -87,22 +64,22 @@ public class fm_rpt_profit_from_sales extends Fragment  {
 
     private static EditText etxt_Month;
     private EditText etxt_Year;
+    private RadioGroup rg_type_where_select;
+    private TextView txtAmountSum;
 
-    private DatePickerDialog dialogMonth;
-    private DatePickerDialog dialogYear;
-    private SimpleDateFormat dateFormatter;
 
     private View v;
 
 
     private ArrayList<SP_WEB_RP_SUMPROFIT_ALL> testDatas;
     private BarChart barChart;
-    static final int DATE_DIALOG_ID = 1;
-    private int mYear;
-    private int mMonth;
-    private int mDay;
     private Date mStartDate;
     private Date mEndDate;
+    private int mYear;
+    private int mMonth;
+
+    private ListView mListView;
+    private adapter_rpt_profit_from_sale mAdapter;
 
 
 
@@ -117,17 +94,22 @@ public class fm_rpt_profit_from_sales extends Fragment  {
         // Inflate the layout for this fragment
 
         v = inflater.inflate(R.layout.fragment_fm_rpt_profit_from_sales, container, false);
+        Calendar cal = Calendar.getInstance();
+
+        etxt_Month = (EditText)v.findViewById(R.id.etxt_Month);
+        etxt_Year = (EditText)v.findViewById(R.id.etxt_Year);
+        rg_type_where_select = (RadioGroup)v.findViewById(R.id.rg_type_where_select);
+        txtAmountSum = (TextView)v.findViewById(R.id.txtAmountSum);
+
 
         mStartDate = new Date();
         mEndDate = new Date();
 
         Date tmpStartDate = Calendar.getInstance().getTime();
 
-        Calendar cal = Calendar.getInstance();
+
         cal.setTime(tmpStartDate);
-
         cal.get(Calendar.DAY_OF_MONTH);
-
         cal.get(Calendar.DAY_OF_YEAR);
 
         mStartDate.setDate(1);
@@ -140,17 +122,7 @@ public class fm_rpt_profit_from_sales extends Fragment  {
         mEndDate.setYear(cal.get(Calendar.YEAR) - 1900);
 
 
-
-
-
-
-        SetChart(mStartDate,mEndDate);
-
-
-
-
-        etxt_Month = (EditText)v.findViewById(R.id.etxt_Month);
-        etxt_Year = (EditText)v.findViewById(R.id.etxt_Year);
+        SetDataSelected(rg_type_where_select.getCheckedRadioButtonId() );
 
         etxt_Month.setEnabled(false);
         etxt_Year.setEnabled(false);
@@ -194,9 +166,13 @@ public class fm_rpt_profit_from_sales extends Fragment  {
                                   fEndDate.setMonth(selectMonth);
                                   fEndDate.setYear(selectedYear - 543 - 1900);
 
+                                  mStartDate = fStartDate;
+                                  mEndDate = fEndDate;
 
 
-                                  SetChart(fStartDate,fEndDate);
+                                  SetDataSelected(rg_type_where_select.getCheckedRadioButtonId() );
+
+                                  //SetChart(mStartDate,mEndDate);
 
 
 
@@ -212,13 +188,98 @@ public class fm_rpt_profit_from_sales extends Fragment  {
 
         });
 
+        rg_type_where_select.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+
+                SetDataSelected(i);
+            }
+        });
+
+
+
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
 
         return v;
     }
+    private void SetDataSelected(int chkRadioSelected){
+        if (chkRadioSelected == R.id.rp_profit_from_sale_Check_as_Week){
 
+            Date fTempDate = new Date();
+            Date fStartDate = new Date();
+            Date fEndDate = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(fTempDate);
+
+            int iDay = cal.get(Calendar.DAY_OF_WEEK) - 1;
+
+
+
+            switch (iDay){
+                case 1 : fStartDate = fTempDate;
+                    cal.add( Calendar.DATE, 6 );
+                    fEndDate = cal.getTime();
+                    break;
+                case 2 : cal.add(Calendar.DATE, -1);
+                    fStartDate = cal.getTime();
+                    cal.add( Calendar.DATE, 6 );
+                    fEndDate = cal.getTime();
+                    break;
+                case 3 : cal.add(Calendar.DATE, -2);
+                    fStartDate = cal.getTime();
+                    cal.add( Calendar.DATE, 6 );
+                    fEndDate = cal.getTime();
+                    break;
+                case 4 : cal.add(Calendar.DATE, -3);
+                    fStartDate = cal.getTime();
+                    cal.add( Calendar.DATE, 6 );
+                    fEndDate = cal.getTime();
+                    break;
+                case 5 : cal.add(Calendar.DATE, -4);
+                    fStartDate = cal.getTime();
+                    cal.add( Calendar.DATE, 6 );
+                    fEndDate = cal.getTime();
+                    break;
+                case 6 : cal.add(Calendar.DATE, -5);
+                    fStartDate = cal.getTime();
+                    cal.add( Calendar.DATE, 6 );
+                    fEndDate = cal.getTime();
+                    break;
+                case 7 : cal.add(Calendar.DATE, -6);
+                    fStartDate = cal.getTime();
+                    cal.add( Calendar.DATE, 6 );
+                    fEndDate = cal.getTime();
+                    break;
+            }
+
+            SetChart(fStartDate,fEndDate);
+
+        }else if (chkRadioSelected == R.id.rp_profit_from_sale_Check_as_Month){
+
+            SetChart(mStartDate,mEndDate);
+
+        }else if (chkRadioSelected == R.id.rp_profit_from_sale_Check_as_Year){
+
+            Date fTempDate = new Date();
+            fTempDate = mStartDate;
+            Date fStartDate = new Date();
+            Date fEndDate = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(fTempDate);
+
+            fStartDate.setDate(1);
+            fStartDate.setMonth(0);
+            fStartDate.setYear(cal.get(Calendar.YEAR) - 1900);
+
+            fEndDate.setDate(31);
+            fEndDate.setMonth(11);
+            fEndDate.setYear(cal.get(Calendar.YEAR) - 1900);
+
+            SetChart(fStartDate,fEndDate);
+        }
+    }
     private void SetChart(Date aStartDate,Date aEndDate) {
 
 
@@ -249,6 +310,8 @@ public class fm_rpt_profit_from_sales extends Fragment  {
         final ArrayList<BarEntry> barEntrySale = new ArrayList<>();
         final ArrayList<BarEntry> barEntryProfit = new ArrayList<>();
         float index = 0.5f;
+        float sumAmountProfit = 0;
+
         for (SP_WEB_RP_SUMPROFIT_ALL testData : testDatas) {
             String fXTYPE = testData.getXTYPE();
             float fSUM_COST_ALL = testData.getSUM_COST_ALL();
@@ -259,10 +322,17 @@ public class fm_rpt_profit_from_sales extends Fragment  {
             barEntrySale.add(new BarEntry(index,fSUM_SALE_BEFORE_VAT));
             barEntryProfit.add(new BarEntry(index,fSUM_PROFIT_AMOUNT));
 
-
+            sumAmountProfit += testData.getSUM_PROFIT_AMOUNT();
             index++;
         }
 
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+        decimalFormatSymbols.setDecimalSeparator('.');
+        decimalFormatSymbols.setGroupingSeparator(',');
+        DecimalFormat formatter = new DecimalFormat("#,##0.00", decimalFormatSymbols);
+
+
+        txtAmountSum.setText(formatter.format(sumAmountProfit));
 
         BarDataSet datasetSale = new BarDataSet(barEntrySale, "ยอดขาย");
         BarDataSet datasetCost = new BarDataSet(barEntryCost, "ต้นทุน");
@@ -294,7 +364,6 @@ public class fm_rpt_profit_from_sales extends Fragment  {
 
 
         barChart.setData(data);
-
 
         barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         barChart.getXAxis().setLabelRotationAngle(0);
@@ -349,6 +418,12 @@ public class fm_rpt_profit_from_sales extends Fragment  {
 
         barChart.getBarData().setBarWidth(barWidth);
         barChart.groupBars(0, groupSpace, barSpace);
+
+
+
+        mListView = (ListView) v.findViewById(R.id.list_rpt_profit_from_sales);
+        mAdapter = new adapter_rpt_profit_from_sale(getActivity(), testDatas);
+        mListView.setAdapter(mAdapter);
 
     }
 
