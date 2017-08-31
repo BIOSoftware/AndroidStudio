@@ -37,12 +37,14 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        if (savedInstanceState == null){
+            fm_Main fm = new fm_Main();
+            FragmentManager fmm = getSupportFragmentManager();
+            FragmentTransaction ft = fmm.beginTransaction();
+            ft.replace(R.id.fm_Layout_Main,fm);
+            ft.commit();
+        }
 
-        fm_Main fm = new fm_Main();
-        FragmentManager fmm = getSupportFragmentManager();
-        FragmentTransaction ft = fmm.beginTransaction();
-        ft.replace(R.id.fm_Layout_Main,fm);
-        ft.commit();
 
     }
 
