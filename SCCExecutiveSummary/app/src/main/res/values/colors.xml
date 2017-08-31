@@ -6,6 +6,8 @@
     <color name="colorRed">#f70313</color>
     <color name="colorBlue">#0307f7</color>
     <color name="colorBackgroudTopLine">#cef5a6</color>
+    <color name="colorDarkGray">#656566</color>
+    <color name="colorWhite">#ffffff</color>
 
     <color name="colorChart01">#f70b03</color>
     <color name="colorChart02">#f76903</color>

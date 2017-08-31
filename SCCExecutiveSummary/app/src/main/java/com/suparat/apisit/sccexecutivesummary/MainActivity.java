@@ -1,12 +1,11 @@
 package com.suparat.apisit.sccexecutivesummary;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
+
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -36,6 +35,15 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
+        fm_Main fm = new fm_Main();
+        FragmentManager fmm = getSupportFragmentManager();
+        FragmentTransaction ft = fmm.beginTransaction();
+        ft.replace(R.id.fm_Layout_Main,fm);
+        ft.commit();
+
     }
 
     @Override
@@ -103,5 +111,14 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void setnewFragment(Fragment fragment,boolean addbackstack,String title) {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.fm_Layout_Main, fragment);
+        if (addbackstack)
+            transaction.addToBackStack(title);
+        transaction.commit();
     }
 }
