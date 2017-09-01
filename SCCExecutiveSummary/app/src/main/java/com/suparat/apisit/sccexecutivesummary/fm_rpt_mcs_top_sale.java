@@ -17,6 +17,7 @@ import android.widget.RadioGroup;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -35,6 +36,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
@@ -89,9 +91,10 @@ public class fm_rpt_mcs_top_sale extends Fragment {
         mStartDate.setMonth(cal.get(Calendar.MONTH) );
         mStartDate.setYear(cal.get(Calendar.YEAR) - 1900);
 
-        mEndDate.setDate(cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        mEndDate.setDate(1);
         mEndDate.setMonth(cal.get(Calendar.MONTH) );
         mEndDate.setYear(cal.get(Calendar.YEAR) - 1900);
+        mEndDate.setDate(cal.getActualMaximum(Calendar.DAY_OF_MONTH));
 
 
         SetDataSelected(rg_type_where_select.getCheckedRadioButtonId() );
@@ -133,9 +136,10 @@ public class fm_rpt_mcs_top_sale extends Fragment {
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(fStartDate);
 
-                        fEndDate.setDate(cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+                        fEndDate.setDate(1);
                         fEndDate.setMonth(selectMonth);
                         fEndDate.setYear(selectedYear - 543 - 1900);
+                        fEndDate.setDate(cal.getActualMaximum(Calendar.DAY_OF_MONTH));
 
                         mStartDate = fStartDate;
                         mEndDate = fEndDate;
@@ -261,10 +265,14 @@ public class fm_rpt_mcs_top_sale extends Fragment {
 
         final ArrayList<BarEntry> fEntryRemain = new ArrayList<>();
         final ArrayList<BarEntry> fEntrySale = new ArrayList<>();
-        float index = 0.5f;
-        float sumAmountProfit = 0;
+        final String[] fLabelList = new String[20];
+
+
+
+        int index = 0;
 
         for (SP_WEB_RP_BEST_SELLER testData : fDataSet) {
+
             String fBRAND_ID = testData.getBRAND_ID();
             String fMODEL_ID = testData.getMODEL_ID();
             String fBRAND_NAME = testData.getBRAND_NAME();
@@ -272,21 +280,26 @@ public class fm_rpt_mcs_top_sale extends Fragment {
             int fQTY_SALE = testData.getQTY_SALE();
             int fQTY_REMAIN = testData.getQTY_REMAIN();
 
-
-            fEntryRemain.add(new BarEntry(index,fQTY_REMAIN));
-            fEntrySale.add(new BarEntry(index,fQTY_SALE));
+            if (testData.getXTYPE_ID() == "1"){
+                fEntrySale.add(new BarEntry(index,fQTY_SALE));
+            }else{
+                fEntryRemain.add(new BarEntry(index,fQTY_REMAIN));
+            }
+            fLabelList[(int) index] = fMODEL_NAME;
 
             index++;
         }
 
-        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
-        decimalFormatSymbols.setDecimalSeparator('.');
-        decimalFormatSymbols.setGroupingSeparator(',');
-        DecimalFormat formatter = new DecimalFormat("#,##0.00", decimalFormatSymbols);
+        //DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+        //decimalFormatSymbols.setDecimalSeparator('.');
+        //decimalFormatSymbols.setGroupingSeparator(',');
+        //DecimalFormat formatter = new DecimalFormat("#,##0.00", decimalFormatSymbols);
         //txtAmountSum.setText(formatter.format(sumAmountProfit));
 
         BarDataSet datasetSale = new BarDataSet(fEntrySale, "ขาย");
-        BarDataSet datasetRemain = new BarDataSet(fEntryRemain, "ตงเหลือ");
+        BarDataSet datasetRemain = new BarDataSet(fEntryRemain, "คงเหลือ");
+
+
 
         datasetRemain.setValueTextSize(8);
         datasetSale.setValueTextSize(8);
@@ -309,59 +322,73 @@ public class fm_rpt_mcs_top_sale extends Fragment {
 
         fChart.setData(data);
 
-        fChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        fChart.getXAxis().setLabelRotationAngle(0);
-
-        final XAxis xAxis = fChart.getXAxis();
-        xAxis.setTextSize(8);
-        xAxis.setCenterAxisLabels(true);
-        xAxis.setDrawLabels(true);
 
 
-        /**
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float vData, AxisBase axisBase) {
+        XAxis xl = fChart.getXAxis();
+        xl.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xl.setDrawAxisLine(true);
+        xl.setDrawGridLines(false);
+        xl.setGranularity(10f);
 
-                if (vData < 0 || vData >= fDataSet.size()) {
-                    return "";
-                }else {
-                    String fXTYPE = fDataSet.get((int) vData).getXTYPE();
-                    if (vData == 0 || vData == 1 || vData == 2){
-                        if (fXTYPE.equals("1")) {
-                            return "ขายรถ";
-                        } else if (fXTYPE.equals("2")) {
-                            return "ขายอะไหล่";
-                        } else if (fXTYPE.equals("3")) {
-                            return "บริการ";
-                        } else
-                            return "";
-                    } else return "";
+        YAxis yl = fChart.getAxisLeft();
+        yl.setDrawAxisLine(true);
+        yl.setDrawGridLines(true);
+        yl.setAxisMinimum(0f);
 
-                }
-            }
-            public int getDecimalDigits() { return 1; }
-        });
 
-        */
+        YAxis yr = fChart.getAxisRight();
+        yr.setDrawAxisLine(true);
+        yr.setDrawGridLines(false);
+        yr.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-        YAxis RightAxis = fChart.getAxisRight();
-        RightAxis.setEnabled(false);
+        fChart.setFitBars(true);
+
+
+        Legend l = fChart.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(false);
+        l.setFormSize(8f);
+        l.setXEntrySpace(4f);
+
+
 
 
         fChart.animateY(3000);
 
 
 
-        float groupSpace = 0.14f;
-        float barSpace = 0.02f; // x2 dataset
-        float barWidth = 0.46f; // x2 dataset
-        barWidth = 0.26f; // x2 dataset
+        float groupSpace = 0f;
+        float barSpace = 0f; // x2 dataset
+        float barWidth = 1f; // x2 dataset 0.42f  0.45f
 
 
 
         fChart.getBarData().setBarWidth(barWidth);
-        fChart.groupBars(0, groupSpace, barSpace);
+        fChart.groupBars(0f, groupSpace, barSpace);
+
+        xl.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float vData, AxisBase axisBase) {
+
+                if (vData < 0 || vData >= fDataSet.size()) {
+                    return "";
+                }else {
+                    String fXTYPE = fDataSet.get((int) vData).getXTYPE_ID();
+
+                        if (fXTYPE.equals("1")) {
+                            return "ขายรถ";
+                        } else
+                            return "";
+
+
+                }
+            }
+            public int getDecimalDigits() { return 1; }
+        });
+
+
 
 
 
@@ -378,8 +405,8 @@ public class fm_rpt_mcs_top_sale extends Fragment {
 
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-
         StrictMode.setThreadPolicy(policy);
+
         DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
         String fReportStartDate = df.format(aStartDate);
         String fReportEndDate = df.format(aEndDate);
@@ -413,14 +440,24 @@ public class fm_rpt_mcs_top_sale extends Fragment {
                         JSONObject jo = (JSONObject) ja.get(i);
 
                         SP_WEB_RP_BEST_SELLER Items = new SP_WEB_RP_BEST_SELLER();
+                        Items.setXTYPE_ID("1");
                         Items.setBRAND_ID(jo.getString("BRAND_ID"));
                         Items.setMODEL_ID(jo.getString("MODEL_ID"));
                         Items.setBRAND_NAME(jo.getString("BRAND_NAME"));
                         Items.setMODEL_NAME(jo.getString("MODEL_NAME"));
                         Items.setQTY_SALE(Integer.parseInt(jo.getString("QTY_SALE")) );
-                        Items.setQTY_REMAIN(Integer.parseInt(jo.getString("QTY_REMAIN")) );
-
+                        Items.setQTY_REMAIN(0 );
                         listItems.add(Items);
+
+                        SP_WEB_RP_BEST_SELLER Items2 = new SP_WEB_RP_BEST_SELLER();
+                        Items2.setXTYPE_ID("2");
+                        Items2.setBRAND_ID(jo.getString("BRAND_ID"));
+                        Items2.setMODEL_ID(jo.getString("MODEL_ID"));
+                        Items2.setBRAND_NAME(jo.getString("BRAND_NAME"));
+                        Items2.setMODEL_NAME(jo.getString("MODEL_NAME"));
+                        Items2.setQTY_SALE(0 );
+                        Items2.setQTY_REMAIN(Integer.parseInt(jo.getString("QTY_REMAIN")) );
+                        listItems.add(Items2);
                     }
                 }
 

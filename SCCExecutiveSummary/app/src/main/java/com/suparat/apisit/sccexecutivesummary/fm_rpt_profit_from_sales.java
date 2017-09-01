@@ -48,6 +48,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -117,9 +118,10 @@ public class fm_rpt_profit_from_sales extends Fragment  {
         mStartDate.setYear(cal.get(Calendar.YEAR) - 1900);
 
 
-        mEndDate.setDate(cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        mEndDate.setDate(1);
         mEndDate.setMonth(cal.get(Calendar.MONTH) );
         mEndDate.setYear(cal.get(Calendar.YEAR) - 1900);
+        mEndDate.setDate(cal.getActualMaximum(Calendar.DAY_OF_MONTH));
 
 
         SetDataSelected(rg_type_where_select.getCheckedRadioButtonId() );
@@ -162,9 +164,12 @@ public class fm_rpt_profit_from_sales extends Fragment  {
                                   Calendar cal = Calendar.getInstance();
                                   cal.setTime(fStartDate);
 
-                                  fEndDate.setDate(cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+                                  int fDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+                                  fEndDate.setDate(1);
                                   fEndDate.setMonth(selectMonth);
                                   fEndDate.setYear(selectedYear - 543 - 1900);
+                                  fEndDate.setDate(fDay);
 
                                   mStartDate = fStartDate;
                                   mEndDate = fEndDate;
@@ -285,19 +290,10 @@ public class fm_rpt_profit_from_sales extends Fragment  {
 
 
 
-        String fStartDate = "07/01/2017";
-        String fEndDate = "07/30/2017";
+
 
         DateFormat df = new SimpleDateFormat("mm/dd/yyyy");
-        Date startDate = null;
-        Date endDate = null;
-        try {
-            startDate = df.parse(fStartDate);
-            endDate = df.parse(fEndDate);
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
         testDatas = GetDataJSON(aStartDate,aEndDate);
 

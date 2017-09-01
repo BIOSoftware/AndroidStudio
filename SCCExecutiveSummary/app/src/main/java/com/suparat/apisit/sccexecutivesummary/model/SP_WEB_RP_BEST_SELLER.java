@@ -5,6 +5,8 @@ package com.suparat.apisit.sccexecutivesummary.model;
  */
 
 public class SP_WEB_RP_BEST_SELLER {
+
+    String XTYPE_ID;
     String BRAND_ID;
     String MODEL_ID;
     String BRAND_NAME;
@@ -12,6 +14,13 @@ public class SP_WEB_RP_BEST_SELLER {
     int QTY_SALE;
     int QTY_REMAIN;
 
+    public String getXTYPE_ID() {
+        return XTYPE_ID;
+    }
+
+    public void setXTYPE_ID(String XTYPE_ID) {
+        this.XTYPE_ID = XTYPE_ID;
+    }
     public String getBRAND_ID() {
         return BRAND_ID;
     }
